@@ -1,0 +1,27 @@
+(DEFPACKAGE :INTERVAL
+  (:USE :COMMON-LISP)
+  (:SHADOW :+ :- :* :/ := :>= :<= :< :>)
+  (:EXPORT :+ :- :* :/ := :>= :<= :< :>
+           :NEW :O :I))
+
+(IN-PACKAGE :INTERVAL)
+
+(DEFSTRUCT INTERVAL
+  (MIN 0.0 :TYPE DOUBLE-FLOAT)
+  (MAX 0.0 :TYPE DOUBLE-FLOAT))
+
+(DEFUN NEW (MIN MAX)
+  (MAKE-INTERVAL :MIN (COERCE MIN 'DOUBLE-FLOAT)
+                 :MAX (COERCE MAX 'DOUBLE-FLOAT)))
+
+(DEFCONSTANT O (NEW 0.0 0.0))
+(DEFCONSTANT I (NEW 1.0 1.0))
+
+(DEFUN %+ (A B)
+  (NEW (CL:+ (INTERVAL-MIN A)
+             (INTERVAL-MIN B))
+       (CL:+ (INTERVAL-MAX A)
+             (INTERVAL-MAX B))))
+
+(DEFUN + (&REST ARGS)
+  (REDUCE #'%+ ARGS :INITIAL-VALUE O))
